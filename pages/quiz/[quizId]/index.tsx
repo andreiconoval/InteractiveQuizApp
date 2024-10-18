@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { Button } from "@nextui-org/button";
 import { useEffect, useState } from "react";
 import { useQuizContext } from "@/contexts/quiz/quizContext";
+import AddQuestionForm from "@/components/add-question";
 
 export interface QuizPageProps {
   quiz: Quiz;
@@ -40,6 +41,16 @@ export default function QuizDetail() {
         <Button onClick={startQuiz} color="success" size="lg">
           Start quiz!
         </Button>
+
+        <Button
+          onClick={() => setShowAddForm((show) => !show)}
+          color="primary"
+          size="lg"
+        >
+          Add question
+        </Button>
+
+        {showAddForm && <AddQuestionForm onSubmit={async () => {}} />}
       </section>
     </DefaultLayout>
   );
