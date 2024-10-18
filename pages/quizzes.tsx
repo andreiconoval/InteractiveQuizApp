@@ -73,12 +73,3 @@ export default function IndexPage() {
     setQuizzes(quizzes);
   }
 }
-
-export async function getServerSideProps() {
-  const quizzezRequest = await fetch(`http://localhost:3000/quizzes.json`);
-  const quizzes: Quiz[] = await quizzezRequest.json();
-
-  return {
-    props: { quizzes },
-  };
-}

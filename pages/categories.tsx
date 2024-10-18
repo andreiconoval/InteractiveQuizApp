@@ -11,17 +11,20 @@ import { useRouter } from "next/router";
 import { title } from "@/components/primitives";
 import { getPluralizedText } from "@/utils/text";
 import { Category, Quiz } from "@/types";
+import { useEffect, useState } from "react";
 
-export interface CategoriesPageProps {
-  categories: Category[];
-  quizzes: Quiz[];
-}
-
-export default function IndexPage({
-  categories,
-  quizzes,
-}: CategoriesPageProps) {
+export default function IndexPage() {
   const router = useRouter();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await loadCategories();
+      await loadQuizzes();
+    };
+    fetchData();
+  }, []);
 
   const goToQuiz = (quizId: number) => {
     router.push(`/quiz/${quizId}`);
@@ -96,18 +99,17 @@ export default function IndexPage({
       </section>
     </DefaultLayout>
   );
-}
 
-export async function getServerSideProps() {
-  const quizzezRequest = await fetch(`http://localhost:3000/quizzes.json`);
-  const quizzes: Quiz[] = await quizzezRequest.json();
+  async function loadCategories() {
+    const request = await fetch(`http://localhost:3000/api/categories`);
+    const categories: Category[] = await request.json();
+    setCategories(categories);
+  }
 
-  const categoriesRequest = await fetch(
-    `http://localhost:3000/categories.json`
-  );
-  const categories: Category[] = await categoriesRequest.json();
+  async function loadQuizzes() {
+    const request = await fetch(`http://localhost:3000/api/quiz`);
+    const quizzes: Quiz[] = await request.json();
 
-  return {
-    props: { categories, quizzes },
-  };
+    setQuizzes(quizzes);
+  }
 }
