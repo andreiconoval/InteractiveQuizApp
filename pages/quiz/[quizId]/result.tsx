@@ -35,7 +35,7 @@ export default function ScoreDetail() {
               {+query?.score! >= quiz?.questions?.length! * 0.7 ? (
                 <Chip color="success">You did a great job </Chip>
               ) : (
-                <Chip color="danger">Try again</Chip>
+                <Chip color="danger">Try again!!</Chip>
               )}
             </div>
           </div>
