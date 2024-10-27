@@ -19,13 +19,35 @@ export default async function quiz(req, res) {
   if (req.method === "PUT") {
     try {
       const newQuestion = req.body;
-      newQuestion.id = "question-" + Date.now();
-      const fileData = fs.readFileSync(filePath, "utf8");
-      const quiz = JSON.parse(fileData);
 
+      // Read the existing quizzes
+      const fileData = fs.readFileSync(filePath, "utf8");
+      const quizzes = JSON.parse(fileData);
+
+      // Find the specific quiz by quizId
+      const quiz = quizzes.find((q) => q.id == quizId);
+      if (!quiz) {
+        return res.status(404).json({ error: "Quiz not found." });
+      }
+
+      // Find the next question ID by checking the highest current question ID in the quiz
+      const maxQuestionId = Math.max(0, ...quiz.questions.map((q) => q.id));
+      newQuestion.id = maxQuestionId + 1;
+
+      // Generate unique numeric IDs for each response
+      const maxResponseId = Math.max(
+        0,
+        ...quiz.questions.flatMap((q) => q.responses.map((r) => r.id))
+      );
+      newQuestion.responses.forEach((response, index) => {
+        response.id = maxResponseId + index + 1;
+      });
+
+      // Add the new question to the quiz
       quiz.questions.push(newQuestion);
 
-      fs.writeFileSync(filePath, JSON.stringify(quiz, null, 2));
+      // Write the updated quizzes back to the file
+      fs.writeFileSync(filePath, JSON.stringify(quizzes, null, 2));
 
       res.status(200).json(quiz);
     } catch (error) {
