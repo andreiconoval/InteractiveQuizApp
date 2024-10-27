@@ -1,6 +1,6 @@
 import { subtitle, title } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
-import { Quiz } from "@/types";
+import { Question, Quiz } from "@/types";
 import { useRouter } from "next/router";
 import { Button } from "@nextui-org/button";
 import { useEffect, useState } from "react";
@@ -50,7 +50,14 @@ export default function QuizDetail() {
           Add question
         </Button>
 
-        {showAddForm && <AddQuestionForm onSubmit={async () => {}} />}
+        {showAddForm && (
+          <AddQuestionForm
+            onSubmit={async (question) => {
+              await addQuestion(question);
+              setShowAddForm(() => false);
+            }}
+          />
+        )}
       </section>
     </DefaultLayout>
   );
@@ -61,5 +68,19 @@ export default function QuizDetail() {
 
     setQuiz(quiz);
     setSharedQuiz({ quiz });
+  }
+
+  async function addQuestion(question: Question) {
+    await fetch(`http://localhost:3000/api/quiz/${router.query.quizId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(question),
+    });
+
+    if (router.query.quizId) {
+      await loadQuiz(+router.query.quizId);
+    }
   }
 }
