@@ -51,21 +51,3 @@ export default function ScoreDetail() {
     setQuiz(quiz);
   }
 }
-
-export async function getServerSideProps(context: any) {
-  const { quizId } = context.params;
-  const quizzezRequest = await fetch(`http://localhost:3000/quizzes.json`);
-  const quizzes: Quiz[] = await quizzezRequest.json();
-
-  const quiz = quizzes.find((quiz) => quiz.id === parseInt(quizId));
-
-  if (!quiz) {
-    return {
-      notFound: true,
-    };
-  }
-
-  return {
-    props: { quiz },
-  };
-}
